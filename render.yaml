@@ -1,0 +1,36 @@
+services:
+  # Staging: deploys automatically from main once GitHub checks pass.
+  # Also builds a preview for every pull request.
+  - type: web
+    name: team-poc-staging
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    previews:
+      generation: automatic
+    envVars:
+      - key: APP_ENV
+        value: staging
+      - key: NODE_VERSION
+        value: "20"
+
+  # Production: never deploys on its own. The Team Lead (the only Render
+  # user) releases it with Manual Deploy -> Deploy latest commit.
+  - type: web
+    name: team-poc-production
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"

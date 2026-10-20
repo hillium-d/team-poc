@@ -1,0 +1,27 @@
+name: Claude review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  review:
+    # Skip drafts so Claude only reviews work that is ready.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this pull request against the rules in CLAUDE.md.
+            Point out bugs, missing tests, security problems and anything
+            that breaks the team conventions. Be concise. Your review is
+            advisory: the Team Lead makes the final decision.
