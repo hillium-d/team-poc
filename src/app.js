@@ -36,3 +36,14 @@ app.post('/tasks', (req, res) => {
 });
 
 module.exports = app;
+
+
+
+app.patch('/tasks/:id', (req, res) => {
+  const task = tasks.find((t) => t.id === Number(req.params.id));
+  if (!task) {
+    return res.status(404).json({ error: 'task not found' });
+  }
+  task.done = true;
+  return res.json(task);
+});
